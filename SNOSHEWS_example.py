@@ -109,7 +109,7 @@ if __name__ == "__main__":
     # use the probabilities to compute the flux at Earth
 
     # pick a model
-    SNEWPY_model_dir = "/nucastro2/jpknelle/Research/SNEWS2/snewpy 1.4jpk/models"  # directory containing model input files
+    SNEWPY_model_dir = "/path/to/snewpy/models"  # directory containing model input files
     model_type = 'Bollig_2016' # Model type from snewpy.models
     model = 's11.2c' # Name of model and a time
     model_path = SNEWPY_model_dir + "/" + model_type + "/" + model
