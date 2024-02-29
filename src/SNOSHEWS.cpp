@@ -16,7 +16,7 @@ using std::norm;
 using std::va_list;
 
 //#include<iostream>
-using::std::cout;
+using std::cout;
 
 //#include<ostream>
 using std::ostream;
@@ -160,8 +160,6 @@ vector<vector<vector<vector<double> > > > Run(InputDataSNOSHEWS ID)
            E = vector<double>(NE);
            kV = vector<array<double,NF> >(NE);
            HfV=vector<vector<MATRIX<complex<double>,NF,NF> > >(NM,vector<MATRIX<complex<double>,NF,NF> >(NE));
-           CV=vector<vector<array<MATRIX<complex<double>,NF,NF>,NF> > >(NM,vector<array<MATRIX<complex<double>,NF,NF>,NF> >(NE));
-           AV=vector<vector<array<array<double,NF>,NF> > >(NM,vector<array<array<double,NF>,NF> >(NE));
 
 	   // vectors of energies at infinity and vacuum eigenvalues at infinity
            for(i=0;i<=NE-1;i++)
@@ -191,12 +189,6 @@ vector<vector<vector<vector<double> > > > Run(InputDataSNOSHEWS ID)
            Evaluate_UV(); 
 	   Evaluate_HfV(); 
 
-           // cofactor matrices in vacuum
-           Evaluate_CV();
-
-           // mixing matrix element prefactors in vacuum
-           Evaluate_AV();
-
            // *****************************************************
            // *****************************************************
            // quantities evaluated at inital point
@@ -213,10 +205,6 @@ vector<vector<vector<vector<double> > > > Run(InputDataSNOSHEWS ID)
            VfMSW0[tau][tau]=Vtau(rrho,YYe); 
            VfMSWbar0=-Conjugate(VfMSW0);
 
-           // cofactor matrices at initial point - will be recycled as cofactor matrices at beginning of every step           
-           vector<vector<array<MATRIX<complex<double>,NF,NF>,NF> > > C0(NM,vector<array<MATRIX<complex<double>,NF,NF>,NF> >(NE));
-           // mixing matrix element prefactors at initial point - will be recycled like C0         
-           vector<vector<array<array<double,NF>,NF> > > A0(NM,vector<array<array<double,NF>,NF> >(NE));
            // mixing matrices at initial point, not recycled
            U0 = vector<vector<MATRIX<complex<double>,NF,NF> > >(NM,vector<MATRIX<complex<double>,NF,NF> >(NE)); 
  
@@ -225,24 +213,12 @@ vector<vector<vector<vector<double> > > > Run(InputDataSNOSHEWS ID)
               { Hf0=HfV[nu][i]+VfMSW0;
                 k0=k(Hf0);
                 deltak0=deltak(k0);
-                C0[nu][i]=CofactorMatrices(Hf0,k0);
-                for(int j=0;j<=NF-1;j++)
-                   { if( real(C0[nu][i][j][mu][e]*CV[nu][i][j][mu][e])<0. ){ A0[nu][i][j][e]=-AV[nu][i][j][e];} else{ A0[nu][i][j][e]=AV[nu][i][j][e];}
-                     A0[nu][i][j][mu]=AV[nu][i][j][mu];
-                     if( real(C0[nu][i][j][mu][tau]*CV[nu][i][j][mu][tau])<0. ){ A0[nu][i][j][tau]=-AV[nu][i][j][tau];} else{ A0[nu][i][j][tau]=AV[nu][i][j][tau];}
-                    }
-                U0[nu][i]=MixingMatrix(deltak0,C0[nu][i],A0[nu][i]);
+                U0[nu][i]=MixingMatrix(Hf0,k0,deltak0);
 
-                Hfbar0=HfV[antinu][i]-VfMSW0;
+                Hfbar0=HfV[antinu][i]+VfMSWbar0;
                 kbar0=kbar(Hfbar0);
                 deltakbar0=deltakbar(kbar0);
-                C0[antinu][i]=CofactorMatrices(Hfbar0,kbar0);
-                for(int j=0;j<=NF-1;j++)
-                   { if( real(C0[antinu][i][j][mu][e]*CV[antinu][i][j][mu][e])<0. ){ A0[antinu][i][j][e]=-AV[antinu][i][j][e];} else{ A0[antinu][i][j][e]=AV[antinu][i][j][e];}
-                     A0[antinu][i][j][mu]=AV[antinu][i][j][mu];
-                     if( real(C0[antinu][i][j][mu][tau]*CV[antinu][i][j][mu][tau])<0. ){ A0[antinu][i][j][tau]=-AV[antinu][i][j][tau];} else{ A0[antinu][i][j][tau]=AV[antinu][i][j][tau];}
-                    }
-                U0[antinu][i]=MixingMatrix(deltakbar0,C0[antinu][i],A0[antinu][i]);
+                U0[antinu][i]=MixingMatrix(Hfbar0,kbar0,deltakbar0);
                }
 
            // ******************************************************
@@ -266,12 +242,6 @@ vector<vector<vector<vector<double> > > > Run(InputDataSNOSHEWS ID)
            vector<vector<array<double,NY> > > Y(NM,vector<array<double,NY> >(NE));
            vector<vector<array<double,NY> > > Y0(NM,vector<array<double,NY> >(NE));
            vector<vector<array<double,NY> > > Yerror(NM,vector<array<double,NY> >(NE));
-
-           // cofactor matrices
-           vector<vector<array<MATRIX<complex<double>,NF,NF>,NF> > > C=C0;
-
-           // mixing matrix prefactors
-           vector<vector<array<array<double,NF>,NF> > > A=A0;
 
            // accumulated S matrices from prior integration domains
            vector<vector<MATRIX<complex<double>,NF,NF> > > Scumulative(NM,vector<MATRIX<complex<double>,NF,NF> >(NE,UnitMatrix<complex<double> >(NF)));
@@ -337,8 +307,8 @@ vector<vector<vector<vector<double> > > > Run(InputDataSNOSHEWS ID)
 
                 if(ID.outputflag==true){ output=true;}
                 if(output==true){ 
-                    Output_Pvsr(firsttime,fPvsr,r,Y,C,A,Scumulative);
-                    Output_Hvsr(firsttime,fHvsr,r,Y,C,A,Scumulative);
+                    Output_Pvsr(firsttime,fPvsr,r,Y,Scumulative);
+                    Output_Hvsr(firsttime,fHvsr,r,Y,Scumulative);
                     output=false;
                    }
 
@@ -351,13 +321,11 @@ vector<vector<vector<vector<double> > > > Run(InputDataSNOSHEWS ID)
 
                     r0=r;
                     Y0=Y;
-                    C0=C;
-                    A0=A;
 
                     // beginning of RK section
                     do{ repeat=false;                         
                         // first step: assumes derivatives are evaluated at r
-                        K(r,dr,Y,C,A,Ks[0]); 
+                        K(r,dr,Y,Ks[0]); 
 
                         // second step
                         r=r0+AA[1]*dr;
@@ -367,7 +335,7 @@ vector<vector<vector<vector<double> > > > Run(InputDataSNOSHEWS ID)
                                 for(int j=0;j<=NY-1;j++){ Y[m][i][j] += BB[1][0] * Ks[0][m][i][j];}
 		               } 
 			   }
-                        K(r,dr,Y,C,A,Ks[1]);
+                        K(r,dr,Y,Ks[1]);
 
                         // remaining steps
                         for(int k=2;k<=NRK-1;k++){
@@ -381,7 +349,7 @@ vector<vector<vector<vector<double> > > > Run(InputDataSNOSHEWS ID)
 				       }
 				   } 
 			       } 
-                            K(r,dr,Y,C,A,Ks[k]);
+                            K(r,dr,Y,Ks[k]);
                            }
 
                         // increment all quantities and update C and A arrays
@@ -400,9 +368,6 @@ vector<vector<vector<vector<double> > > > Run(InputDataSNOSHEWS ID)
                                } 
                            }
 
-                        C=UpdateC(r);
-                        A=UpdateA(C,C0,A0);
-
                         // find largest error
                         maxerror=0.; 
                         for(state m=nu;m<=antinu;m++){
@@ -418,7 +383,7 @@ vector<vector<vector<vector<double> > > > Run(InputDataSNOSHEWS ID)
                          }
 
                         // reset integration variables to those at beginning of step
-                        if(repeat==true){ r=r0; Y=Y0; C=C0; A=A0; finish=output=false;} 
+                        if(repeat==true){ r=r0; Y=Y0; finish=output=false;} 
 
                        }while(repeat==true);
                     // end of RK section
@@ -466,9 +431,9 @@ vector<vector<vector<vector<double> > > > Run(InputDataSNOSHEWS ID)
 
                     if(output==true)
                       { //cout<<"\nOutput at\t"<<r<<flush;
-                        Output_Pvsr(firsttime,fPvsr,r,Y,C,A,Scumulative);
-                        Output_Hvsr(firsttime,fHvsr,r,Y,C,A,Scumulative);
-                        //Output_PvsE(fPvsE,outputfilenamestem,r,Y,C,A,Scumulative);
+                        Output_Pvsr(firsttime,fPvsr,r,Y,Scumulative);
+                        Output_Hvsr(firsttime,fHvsr,r,Y,Scumulative);
+                        //Output_PvsE(fPvsE,outputfilenamestem,r,Y,Scumulative);
                         output=false;
                        }
 
@@ -483,16 +448,12 @@ vector<vector<vector<vector<double> > > > Run(InputDataSNOSHEWS ID)
                 if(d<=ND-2)
                   { double rminus=rmax;
                     double rplus=rmax+2.*cgs::units::cm;
-                    Scumulative=UpdateSm(rminus,rplus,Y,C,A,Scumulative);
-
-                    C0=C;
-                    C=UpdateC(rplus);
-                    A=UpdateA(C,C0,A0);
+                    Scumulative=UpdateSm(rminus,rplus,Y,Scumulative);
                    } 
                 else{ // output at the end of the code
                       if(ID.outputflag==true){ output=true;}
                       if(output==true){
-                          Output_PvsE(fPvsE,outputfilenamestem,rmax,Y,C,A,Scumulative);
+                          Output_PvsE(fPvsE,outputfilenamestem,rmax,Y,Scumulative);
                           Output_PvsEat10kpc(fPvsE,outputfilenamestem,Y,Scumulative);
                           output=false;
                          }
@@ -500,7 +461,7 @@ vector<vector<vector<vector<double> > > > Run(InputDataSNOSHEWS ID)
 
                }// end of domain loop
 
-           Pmf(rs.back(),Y,C,A,Scumulative,PPmf);
+           Pmf(rs.back(),Y,Scumulative,PPmf);
 
            // ********************************
 

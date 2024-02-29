@@ -4,6 +4,9 @@
 // ********************************************************************
 
 using std::complex;
+using std::norm;
+using std::real;
+using std::imag;
 
 using std::max;
 using std::sort;
@@ -93,6 +96,21 @@ array<double,NF> k(MATRIX<complex<double>,NF,NF> Hf)
 
         return k;
        }
+/*      { vector<double> tempks(NF);
+        array<double,NF> ks;
+
+        vector<complex<double> > tempks2=JacobiEigenValues(Hf); 
+        tempks[0]=real(tempks2[0]);
+        tempks[1]=real(tempks2[1]);
+        tempks[2]=real(tempks2[2]);
+        sort(tempks.begin(),tempks.end());
+
+        ks[ordering[0]]=tempks[0];
+        ks[ordering[1]]=tempks[1];
+        ks[ordering[2]]=tempks[2];
+
+        return ks;
+       }*/
 
 array<double,NF> kbar(MATRIX<complex<double>,NF,NF> Hfbar)
      { array<double,NF> k;
@@ -109,6 +127,21 @@ array<double,NF> kbar(MATRIX<complex<double>,NF,NF> Hfbar)
 
        return k;
       }
+/*      { vector<double> tempks(NF);
+        array<double,NF> ks;
+
+        vector<complex<double> > tempks2=JacobiEigenValues(Hfbar); 
+        tempks[0]=real(tempks2[0]);
+        tempks[1]=real(tempks2[1]);
+        tempks[2]=real(tempks2[2]);
+        sort(tempks.begin(),tempks.end());
+
+        ks[ordering[0]]=tempks[0];
+        ks[ordering[1]]=tempks[1];
+        ks[ordering[2]]=tempks[2];
+
+        return ks;
+       }*/
 
 // *********************************************************************
 

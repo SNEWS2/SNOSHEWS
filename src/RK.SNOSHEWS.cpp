@@ -39,15 +39,12 @@ MATRIX<complex<double>,NF,NF> B(array<double,NY> y)
 
 // ********************** The Differential Equation ********************
 
-void K(double r,double dr,vector<vector<array<double,NY> > > &Y,vector<vector<array<MATRIX<complex<double>,NF,NF>,NF> > > &C0,vector<vector<array<array<double,NF>,NF> > > A0,vector<vector<array<double,NY> > > &K)
+void K(double r,double dr,vector<vector<array<double,NY> > > &Y,vector<vector<array<double,NY> > > &K)
           { MATRIX<complex<double>,NF,NF> VfMSW,VfMSWbar, dVfMSWdr,dVfMSWbardr;
             MATRIX<complex<double>,NF,NF> Hf,Hfbar, dHfdr,dHfbardr;
             MATRIX<complex<double>,NF,NF> UU,UUbar;
 
             array<double,NF> kk,kkbar, dkk,dkkbar;
-
-            array<MATRIX<complex<double>,NF,NF>,NF> CC;
-            array<array<double,NF>,NF> AA;
 
             MATRIX<complex<double>,NF,NF> BB, WW;
 
@@ -84,7 +81,7 @@ void K(double r,double dr,vector<vector<array<double,NY> > > &Y,vector<vector<ar
             // *************
 
    	    // set up neutrino S matrices
-            #pragma omp parallel for schedule(static) private(Hf,Hfbar,dHfdr,dHfbardr,BB,WW,UU,UUbar,kk,kkbar,dkk,dkkbar,CC,AA) firstprivate(Ha,HaB,dvdr,phase,JI)
+            #pragma omp parallel for schedule(static) private(Hf,Hfbar,dHfdr,dHfbardr,BB,WW,UU,UUbar,kk,kkbar,dkk,dkkbar) firstprivate(Ha,HaB,dvdr,phase,JI)
             for(i=0;i<=NE-1;i++)
                { Hf=HfV[nu][i]+VfMSW;
                  dHfdr=dVfMSWdr;
@@ -92,9 +89,7 @@ void K(double r,double dr,vector<vector<array<double,NY> > > &Y,vector<vector<ar
 		 kk=k(Hf);
                  dkk=deltak(kk);
 
-                 CofactorMatrices(Hf,kk,CC);
-                 AA=MixingMatrixFactors(CC,C0[nu][i],A0[nu][i]);
-	  	 UU=MixingMatrix(dkk,CC,AA);
+	  	 UU=MixingMatrix(Hf,kk,dkk);
 
                  BB=B(Y[nu][i]);
                  WW=W(Y[nu][i]);
@@ -152,9 +147,7 @@ void K(double r,double dr,vector<vector<array<double,NY> > > &Y,vector<vector<ar
 		 kkbar=k(Hfbar);
                  dkkbar=deltakbar(kkbar);
 
-                 CofactorMatrices(Hfbar,kkbar,CC);
-                 AA=MixingMatrixFactors(CC,C0[antinu][i],A0[antinu][i]);
-		 UUbar=MixingMatrix(dkkbar,CC,AA);
+		 UUbar=MixingMatrix(Hfbar,kkbar,dkkbar);
 
                  BB=B(Y[antinu][i]);
                  WW=W(Y[antinu][i]);

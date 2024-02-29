@@ -43,7 +43,7 @@ void Close_Output(ofstream &fHvsr)
 
 // ******************************************************
 
-void Output_Pvsr(bool firsttime,ofstream &fPvsr,double r,vector<vector<array<double,NY> > > &Y,vector<vector<array<MATRIX<complex<double>,NF,NF>,NF> > > &C0,vector<vector<array<array<double,NF>,NF> > > A0,vector<vector<MATRIX<complex<double>,NF,NF> > > &Scumulative)
+void Output_Pvsr(bool firsttime,ofstream &fPvsr,double r,vector<vector<array<double,NY> > > &Y,vector<vector<MATRIX<complex<double>,NF,NF> > > &Scumulative)
       { array<MATRIX<complex<double>,NF,NF>,NM> VfMSW, dVfMSWdr;
 
         double rrho=exp(lnrho(log(r)));
@@ -60,7 +60,6 @@ void Output_Pvsr(bool firsttime,ofstream &fPvsr,double r,vector<vector<array<dou
 
         vector<vector<array<double,NF> > > kk(NM,vector<array<double,NF> >(NE));
         vector<vector<array<double,NF> > > dkk(NM,vector<array<double,NF> >(NE));
-
         
         int i;
         #pragma omp parallel for schedule(static)
@@ -68,7 +67,7 @@ void Output_Pvsr(bool firsttime,ofstream &fPvsr,double r,vector<vector<array<dou
            { Hf[nu][i]=HfV[nu][i] + VfMSW[nu];
              kk[nu][i]=k(Hf[nu][i]);
 	     dkk[nu][i]=deltak(kk[nu][i]);
-             UU[nu][i] = MixingMatrix(dkk[nu][i],C0[nu][i],A0[nu][i]);
+             UU[nu][i] = MixingMatrix(Hf[nu][i],kk[nu][i],dkk[nu][i]);
 
 	     Sa[nu][i] = W(Y[nu][i]) * B(Y[nu][i]);		
 
@@ -81,7 +80,7 @@ void Output_Pvsr(bool firsttime,ofstream &fPvsr,double r,vector<vector<array<dou
 	     Hf[antinu][i]=HfV[antinu][i] + VfMSW[antinu];
 	     kk[antinu][i]=kbar(Hf[antinu][i]);
 	     dkk[antinu][i]=deltakbar(kk[antinu][i]);
-	     UU[antinu][i]=MixingMatrix(dkk[antinu][i],C0[antinu][i],A0[antinu][i]);
+	     UU[antinu][i]=MixingMatrix(Hf[antinu][i],kk[antinu][i],dkk[antinu][i]);
       
 	     Sa[antinu][i] = W(Y[antinu][i]) * B(Y[antinu][i]);
 
@@ -140,7 +139,7 @@ void Output_Pvsr(bool firsttime,ofstream &fPvsr,double r,vector<vector<array<dou
 
 // ************************************************************************
 
-void Output_PvsE(ofstream &fPvsE,string outputfilenamestem,double r,vector<vector<array<double,NY> > > &Y,vector<vector<array<MATRIX<complex<double>,NF,NF>,NF> > > &C0,vector<vector<array<array<double,NF>,NF> > > A0,vector<vector<MATRIX<complex<double>,NF,NF> > > &Scumulative)
+void Output_PvsE(ofstream &fPvsE,string outputfilenamestem,double r,vector<vector<array<double,NY> > > &Y,vector<vector<MATRIX<complex<double>,NF,NF> > > &Scumulative)
       { string cmdotdat("cm.dat");
         stringstream filename;
 
@@ -173,7 +172,7 @@ void Output_PvsE(ofstream &fPvsE,string outputfilenamestem,double r,vector<vecto
            { Hf[nu][i]=HfV[nu][i] + VfMSW[nu];
              kk[nu][i]=k(Hf[nu][i]);
 	     dkk[nu][i]=deltak(kk[nu][i]);
-             UU[nu][i] = MixingMatrix(dkk[nu][i],C0[nu][i],A0[nu][i]);
+	     UU[nu][i]=MixingMatrix(Hf[nu][i],kk[nu][i],dkk[nu][i]);
 
 	     Sa[nu][i] = W(Y[nu][i]) * B(Y[nu][i]);
 
@@ -185,7 +184,7 @@ void Output_PvsE(ofstream &fPvsE,string outputfilenamestem,double r,vector<vecto
 	     Hf[antinu][i]=HfV[antinu][i] + VfMSW[antinu];
 	     kk[antinu][i]=kbar(Hf[antinu][i]);
 	     dkk[antinu][i]=deltakbar(kk[antinu][i]);
-	     UU[antinu][i]=MixingMatrix(dkk[antinu][i],C0[antinu][i],A0[antinu][i]);
+	     UU[antinu][i]=MixingMatrix(Hf[antinu][i],kk[antinu][i],dkk[antinu][i]);
        
 	     Sa[antinu][i] = W(Y[antinu][i]) * B(Y[antinu][i]);
 
@@ -230,7 +229,7 @@ void Output_PvsE(ofstream &fPvsE,string outputfilenamestem,double r,vector<vecto
 
 // ************************************************************************
 
-void Output_Hvsr(bool firsttime,ofstream &fHvsr,double r,vector<vector<array<double,NY> > > &Y,vector<vector<array<MATRIX<complex<double>,NF,NF>,NF> > > &C0,vector<vector<array<array<double,NF>,NF> > > A0,vector<vector<MATRIX<complex<double>,NF,NF> > > &Scumulative)
+void Output_Hvsr(bool firsttime,ofstream &fHvsr,double r,vector<vector<array<double,NY> > > &Y,vector<vector<MATRIX<complex<double>,NF,NF> > > &Scumulative)
        { MATRIX<complex<double>,NF,NF> VfMSW,VfMSWbar;
 
          double rrho, YYe;
@@ -308,7 +307,6 @@ void Output_PvsEat10kpc(ofstream &fPvsE,string outputfilenamestem,vector<vector<
              fPvsE<<"\t"<<norm(Smf[antinu][i][0][e])<<"\t"<<norm(Smf[antinu][i][0][mu])<<"\t"<<norm(Smf[antinu][i][0][tau])
                   <<"\t"<<norm(Smf[antinu][i][1][e])<<"\t"<<norm(Smf[antinu][i][1][mu])<<"\t"<<norm(Smf[antinu][i][1][tau])
                   <<"\t"<<norm(Smf[antinu][i][2][e])<<"\t"<<norm(Smf[antinu][i][2][mu])<<"\t"<<norm(Smf[antinu][i][2][tau]);
-
 	    }
 
          fPvsE.flush();
