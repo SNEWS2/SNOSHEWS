@@ -125,6 +125,10 @@ void Neutrino_loader(InputDataSNOSHEWS ID,std::string &outputfilenamestem)
        theta23V*=M_PI/180.; c23V=cos(theta23V); s23V=sin(theta23V);
 
        deltaV*=M_PI/180.; cdeltaV=cos(deltaV); sdeltaV=sin(deltaV);
+
+       etaV[0]*=M_PI/180.;
+       etaV[1]*=M_PI/180.;
+       etaV[2]*=M_PI/180.;
       }
 
        
