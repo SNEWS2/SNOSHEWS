@@ -85,10 +85,11 @@ void Neutrino_loader(InputDataSNOSHEWS ID,std::string &outputfilenamestem)
        theta13V = ID.theta13;
        theta23V = ID.theta23; 
 
-       etaV[0] = 0.;
-       etaV[1] = 0.;
-
        deltaV = ID.deltaCP;
+
+       etaV[0] = 0.;
+       etaV[1] = 0.;      
+       etaV[2] = -deltaV; // set this phase so that the top row of the PMNS matrix is pure real 
 
        // *********************
 
