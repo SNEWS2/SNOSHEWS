@@ -89,7 +89,7 @@ void Neutrino_loader(InputDataSNOSHEWS ID,std::string &outputfilenamestem)
 
        etaV[0] = 0.;
        etaV[1] = 0.;      
-       etaV[2] = -deltaV; // set this phase so that the top row of the PMNS matrix is pure real 
+       etaV[2] = deltaV; // set this phase so that the top row of the PMNS matrix is pure real 
 
        // *********************
 
