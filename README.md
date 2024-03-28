@@ -1,3 +1,4 @@
+![image](https://github.com/SNEWS2/SNOSHEWS/assets/44247426/b7afb17b-b242-404e-ba54-d6a0fd447257)
 
 1) You will need the python-devel, pybind11 and setuptools packages
 
