@@ -25,7 +25,7 @@ if __name__ == "__main__":
     
         ID = SNOSHEWS.InputDataSNOSHEWS()
     
-        ID.outputfilenamestem = "./SNOSHEWS/SNOSHEWS:" + file
+        ID.outputfilenamestem = "./out/SNOSHEWS:" + file
     
         ID.rmin = 1e7
         ID.rmax = 1e12
