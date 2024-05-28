@@ -22,6 +22,6 @@ TROUBLESHOOTING:
 7) If the script cannot find the module you may need to put the *.so library in the same directory
    as your script. The *.so library is in one of the subfolders in the build directory. 
 
-9) You may want to set the OMP_NUM_THREADS environment variable to a reasonable number
+8) SNOSHEWS uses OpenMP. You may want to set the OMP_NUM_THREADS environment variable to a reasonable number for your machine. 
 
 
