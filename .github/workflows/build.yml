@@ -59,3 +59,33 @@ jobs:
           #python SNOSHEWS_example.py
           # Instead, just a quick check that SNOSHEWS can be imported:
           python -c "import SNOSHEWS; print(SNOSHEWS.InputDataSNOSHEWS())"
+
+      - name: Upload distributions
+        uses: actions/upload-artifact@v4
+        with:
+          path: dist/
+          name: release-dists-${{ matrix.os }}-${{ matrix.python-version }}
+          if-no-files-found: error
+
+  publish_to_pypi:
+    # Only run if a new tag was created …
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    # … and if all builds above were successful
+    needs: build
+
+    runs-on: ubuntu-latest
+    permissions:
+      # See https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect#adding-permissions-settings
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Retrieve release distributions
+        uses: actions/download-artifact@v4
+        with:
+          path: dist/
+          pattern: release-dists-*
+          merge-multiple: true
+
+      - name: Publish distribution 📦 to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
