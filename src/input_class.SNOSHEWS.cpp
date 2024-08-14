@@ -14,8 +14,6 @@ using std::max;
 
 using std::vector;
 
-using std::unary_function;
-
 using std::log;
 
 using namespace prefixes;
