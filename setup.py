@@ -7,9 +7,8 @@
 
 import os
 import sysconfig
-from distutils.command.sdist import sdist as DistutilsSdist
 import pybind11
-from setuptools import setup, find_packages
+from setuptools import setup
 from setuptools.extension import Extension
 
 #
@@ -17,11 +16,6 @@ from setuptools.extension import Extension
 #
 setup_keywords = dict()
 #
-
-setup_keywords['extras_require'] = {  # Optional
-    'dev': ['pytest'],
-    'docs':['numpydoc']
-}
 
 LIBOMP_INCLUDE = os.environ['LIBOMP_INCLUDE']
 PYBIND11_INCLUDE = os.path.join(pybind11.__path__[0], "include")
