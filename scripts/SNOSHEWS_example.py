@@ -6,7 +6,8 @@ if __name__ == "__main__":
     from astropy import units as u
 
     import snewpy.models
-    from snewpy.neutrino import MassHierarchy, MixingParameters, ThreeFlavor
+    from snewpy.neutrino import MassHierarchy, MixingParameters
+    from snewpy.flavor import ThreeFlavor
     from snewpy.flux import Flux
 
     mix_params = MixingParameters(MassHierarchy.NORMAL)
@@ -20,6 +21,8 @@ if __name__ == "__main__":
     ID = SNOSHEWS.InputDataSNOSHEWS()
 
     ID.outputfilenamestem = "./out/SNOSHEWS"
+    # Create directory if it doesn't exist
+    os.makedirs(os.path.dirname(ID.outputfilenamestem), exist_ok=True)
 
     ID.rmin = 1e7
     ID.rmax = 1e12
@@ -114,7 +117,7 @@ if __name__ == "__main__":
     model = 's11.2c' # Name of model and a time
     model_path = SNEWPY_model_dir + "/" + model_type + "/" + model
 
-    model_class = getattr(snewpy.models.ccsn, model_type)
+    model_class = getattr(snewpy.models.ccsn_loaders, model_type)
     snmodel = model_class(model_path)
 
     t = np.array([50, 100]) << u.ms
