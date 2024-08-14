@@ -52,6 +52,10 @@ jobs:
           python -m build
           ls -al dist/
           pip install dist/*.whl
-      - name: Run example script
+      - name: Run basic example
         run: |
-          python SNOSHEWS_example.py
+          # Cannot use the example script because it takes very long to run and requires additional setup steps
+          #cd scripts/
+          #python SNOSHEWS_example.py
+          # Instead, just a quick check that SNOSHEWS can be imported:
+          python -c "import SNOSHEWS; print(SNOSHEWS.InputDataSNOSHEWS())"
