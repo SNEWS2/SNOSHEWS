@@ -20,9 +20,10 @@ if __name__ == "__main__":
 
     ID = SNOSHEWS.InputDataSNOSHEWS()
 
-    ID.outputfilenamestem = "./out/SNOSHEWS"
+    outputdir = "./out"
     # Create directory if it doesn't exist
-    os.makedirs(os.path.dirname(ID.outputfilenamestem), exist_ok=True)
+    os.makedirs(os.path.dirname(outputdir), exist_ok=True)
+    ID.outputfilenamestem = outputdir+"/SNOSHEWS"    
 
     ID.rmin = 1e7
     ID.rmax = 1e12
