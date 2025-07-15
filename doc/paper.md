@@ -64,7 +64,9 @@ As neutrinos pass through the mantle of a supernova the matter alters the probab
 
 The SNOSHEWS.py example script in the doc folder shows how to use the module. SNOSHEWS can also be imported into the SNEWPY 2.0 software and is used in the `NumericalMSW' flavor transformation prescription. How to include SNOSHEWS with SNEWPY will be documented in the SNEWPY 2.0 documentation. 
 
-As shown in the SNOSHEWS.py example script, to use SNOSHEWS the user must provide the two data files: the density profile as a function of radius through the supernova, and the electron fraction profile. In the example script SNOSHEWS uses profiles00585_stp.d and profiles00585_Ye.d as the input density and electron fraction profiles. This data was kindly provided by Tobias Fischer and the simulation which generated the data is described in [@Fischer] 
+As shown in the SNOSHEWS.py example script, to use SNOSHEWS the user must provide the two data files: the density profile as a function of radius through the supernova, and the electron fraction profile. In the example script SNOSHEWS uses profiles00585_stp.d and profiles00585_Ye.d as the input density and electron fraction profiles. This data was kindly provided by Tobias Fischer and the simulation which generated the data is described in [@2010A&A...517A..80F] 
+
+Two other scripts are provided: "Create Profiles.ipynb" and "Process Profiles.py". The first generates supernova-like density profiles as a function of time according to an analytic prescription. It will save the data in a folder designated by the user, make figures of the density profiles, and stitch them together into a movie. The second will process each of the profiles through SNOSHEWS, read in the data, make a plot of two of the probabilities for the 10 MeV neutrinos, and then stitch the plots together into a movie. 
 
 # Acknowledgements
 
